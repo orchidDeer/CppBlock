@@ -10,6 +10,11 @@ int main() {
 
     clock_t time = clock();
 
+    /*std::cout << int(0.1) << std::endl;
+    std::cout << int(0.5)  << std::endl;
+    std::cout << int(0.99999)  << std::endl;
+    std::cout << int(1.5)  << std::endl;*/
+
     while(true) {
         if(clock() - time > 50) {
             time = clock();

@@ -3,8 +3,8 @@
 World::World(int height, int seed) {
     this->worldHeight = height;
 
-    perlinNoise[0] = RandomTerrain(seed, 119);
-    perlinNoise[1] = RandomTerrain(seed + 1, 119);
+    perlinNoise[0] = RandomTerrain(seed, 255);
+    perlinNoise[1] = RandomTerrain(seed + 1, 255);
 }
 
 World::~World() {
@@ -12,7 +12,7 @@ World::~World() {
 }
 
 int World::getTerrainHeight(int x) {
-    return worldHeight / 2 - perlinNoise[0].perlinNoise(x);
+    return worldHeight / 2 - perlinNoise[(x / 255) % 2].perlinNoise(x - (255 * (x / 255)));
 }
 
 std::vector<short int> World::createNext(int x, int maxY, int minY) {
@@ -21,9 +21,9 @@ std::vector<short int> World::createNext(int x, int maxY, int minY) {
     // Resize vector to fit the requested range
     line.resize(maxY - minY);
 
-    // TODO: Generate from new RandomTerrain when old one is out of bound
+    // TODO: Interpolate the perlinNoise
     // Get height of the world floor for the specific segment
-    int height = worldHeight / 2 - perlinNoise[0].perlinNoise(x);
+    int height = worldHeight / 2 - perlinNoise[(x / 255) % 2].perlinNoise(x - (255 * (x / 255)));
 
     // Write data to world segment
     for (int i = minY; i < maxY; ++i) {
