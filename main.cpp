@@ -16,7 +16,7 @@ int main() {
     std::cout << int(1.5)  << std::endl;*/
 
     while(true) {
-        if(clock() - time > 50) {
+        if(clock() - time > 10) {
             time = clock();
             if(getStateOfKey(0x57)) {
                 view.move(1);

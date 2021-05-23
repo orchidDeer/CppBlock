@@ -46,6 +46,9 @@ private:
     /// Total height of world.
     int worldHeight;
 
+    /// World seed
+    int worldSeed;
+
     // Area posX posY change
     //std::vector<std::vector<std::vector<short int>>> change;
 };

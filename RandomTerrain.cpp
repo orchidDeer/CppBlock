@@ -6,6 +6,7 @@
 
 RandomTerrain::RandomTerrain(int seed, int size) {
     this->size = size;
+    this->seed = seed;
 
     permutation.resize(size);
 
@@ -48,8 +49,13 @@ float RandomTerrain::noise(float d) {
 int RandomTerrain::perlinNoise(int x) {
 
     float n = noise(float(x) * 0.01f) * 20.f +
+              noise(float(x) * 0.001f) * 50.f +
               noise(float(x) * 0.02f) * 10.f +
               noise(float(x) * 1.f) * 8.f;
 
     return int(n);
+}
+
+int RandomTerrain::getSeed() {
+    return seed;
 }
