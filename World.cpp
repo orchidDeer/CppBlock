@@ -1,11 +1,8 @@
 #include "World.h"
 
-World::World(int height, int seed) {
+World::World(int height, int seed) : perlinNoise(seed, 255) {
     this->worldHeight = height;
     this->worldSeed = seed;
-
-    perlinNoise[0] = RandomTerrain(seed, 255);
-    perlinNoise[1] = RandomTerrain(seed + 1, 255);
 }
 
 World::~World() {
@@ -13,7 +10,13 @@ World::~World() {
 }
 
 int World::getTerrainHeight(int x) {
-    return worldHeight / 2 - perlinNoise[(x / 255) % 2].perlinNoise(x - (255 * (x / 255)));
+
+    // switch to next chunk and make a new perlin noise
+    if(worldSeed + int(x / 255) != perlinNoise.getSeed()) {
+        perlinNoise = RandomTerrain(worldSeed + int(x / 255), 255);
+    }
+
+    return worldHeight / 2 - perlinNoise.perlinNoise(x - (255 * (x / 255)));
 }
 
 std::vector<short int> World::createNext(int x, int maxY, int minY) {
@@ -24,11 +27,11 @@ std::vector<short int> World::createNext(int x, int maxY, int minY) {
 
     // TODO: Interpolate the perlinNoise
     // Get height of the world floor for the specific segment
-    int height = worldHeight / 2 - perlinNoise[(x / 255) % 2].perlinNoise(x - (255 * (x / 255)));
+    int height = worldHeight / 2 - perlinNoise.perlinNoise(x - (255 * (x / 255)));
 
     // switch to next chunk and make a new perlin noise
-    if(worldSeed + int(x / 255) != perlinNoise[(x / 255) % 2].getSeed()) {
-        perlinNoise[(x / 255) % 2] = RandomTerrain(worldSeed + int(x / 255), 255);
+    if(worldSeed + int(x / 255) != perlinNoise.getSeed()) {
+        perlinNoise = RandomTerrain(worldSeed + int(x / 255), 255);
     }
 
     // Write data to world segment

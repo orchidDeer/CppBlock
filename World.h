@@ -41,8 +41,7 @@ public:
 
 private:
     /// Perlin noise to generate base world
-    RandomTerrain perlinNoise[2] = { RandomTerrain(0, 119),
-                                   RandomTerrain(0, 119) };
+    RandomTerrain perlinNoise;
     /// Total height of world.
     int worldHeight;
 
