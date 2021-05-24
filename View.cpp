@@ -62,7 +62,7 @@ void View::draw() {
     }
     needToDraw += "\033[" + std::to_string(10) + ";" + std::to_string(int(loadedWorld.size()) / 2) + "H\033[44m ";
 
-    needToDraw += "\033[" + std::to_string(25) + ";" + std::to_string(25) + "H\033[0m" + std::to_string(posY);
+    needToDraw += "\033[25;25H\033[0mCoords X Y: " + std::to_string(posX + loadedWorld.size() / 2) + " : " + std::to_string(posY);
 
     // Draw buffer.
     printf("%s", needToDraw.c_str());

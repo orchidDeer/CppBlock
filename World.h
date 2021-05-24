@@ -42,11 +42,21 @@ public:
 private:
     /// Perlin noise to generate base world
     RandomTerrain perlinNoise;
+
     /// Total height of world.
     int worldHeight;
 
     /// World seed
     int worldSeed;
+
+    /**
+     * Interpolates between two heights
+     * @param h0 Height one
+     * @param h1 Height two
+     * @param w Bias
+     * @return Interpolated height
+     */
+    static int interpolate(int h0, int h1, float w);
 
     // Area posX posY change
     //std::vector<std::vector<std::vector<short int>>> change;
