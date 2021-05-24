@@ -10,6 +10,7 @@
 #include <list>
 #include <numeric>
 #include <random>
+#include <functional>
 #include <vector>
 
 /**
@@ -17,21 +18,25 @@
  */
 class RandomTerrain {
 public:
-    RandomTerrain(int seed, int size);
+    RandomTerrain(int seed);
     ~RandomTerrain();
 
     int perlinNoise(int x);
     static float fade(float t);
-    float grad(float p);
+    int grad(float p);
     float noise(float p);
 
-    int getSeed();
+    int getSeed() const;
 
 private:
 
-    // mixed vector
-    std::vector<int> permutation;
-    int size, seed;
+    int seed;
+
+    float frequency[8]{};
+    float amplitude[8]{};
+
+    std::uniform_int_distribution<int> distribution;
+    std::default_random_engine dre;
 };
 
 #endif //CMINECRAFT_RANDOMTERRAIN_H

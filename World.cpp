@@ -1,6 +1,8 @@
 #include "World.h"
 
-World::World(int height, int seed) : perlinNoise(seed, 255) {
+#define CHUNKSIZE 1000
+
+World::World(int height, int seed) : perlinNoise(seed) {
     this->worldHeight = height;
     this->worldSeed = seed;
 }
@@ -14,19 +16,19 @@ int World::getTerrainHeight(int x) {
     int height;
 
     // switch to next chunk and make a new perlin noise
-    if(worldSeed + int(x / 255) != perlinNoise.getSeed()) {
-        perlinNoise = RandomTerrain(worldSeed + int(x / 255), 255);
+    if(worldSeed + int(x / CHUNKSIZE) != perlinNoise.getSeed()) {
+        perlinNoise = RandomTerrain(worldSeed + int(x / CHUNKSIZE));
     }
 
     // Get terrain height from perlin noise
-    height = worldHeight / 2 - perlinNoise.perlinNoise(x - (255 * (x / 255)));
+    height = worldHeight / 2 - perlinNoise.perlinNoise(x - (CHUNKSIZE * (x / CHUNKSIZE)));
 
     // Interpolate between different perlin noise if needed to make smooth edges
-    if(x > (int(x / 255) + 1) * 255 - 30) {
+    if(x > (int(x / CHUNKSIZE) + 1) * CHUNKSIZE - 30) {
         // Calculate bias for interpolation
-        float w = float((int(x / 255) + 1) * 255 - x) / 30.f;
+        float w = float((int(x / CHUNKSIZE) + 1) * CHUNKSIZE - x) / 30.f;
         // Interpolate
-        height = interpolate(height, getTerrainHeight((x / 255 + 1) * 255), w);
+        height = interpolate(height, getTerrainHeight((x / CHUNKSIZE + 1) * CHUNKSIZE), w);
     }
 
     return height;

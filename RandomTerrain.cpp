@@ -1,36 +1,23 @@
-//
-// Created by maxim on 08/05/2021.
-//
-
 #include "RandomTerrain.h"
 
-RandomTerrain::RandomTerrain(int seed, int size) {
-    this->size = size;
+RandomTerrain::RandomTerrain(int seed) : distribution(-1, 1), dre(seed) {
     this->seed = seed;
 
-    permutation.resize(size);
-
-    // Fill permutation with values form 0 to size
-    std::iota(permutation.begin(), permutation.end(), 0);
-
-    std::default_random_engine engine(seed);
-
-    std::shuffle(permutation.begin(), permutation.end(), engine);
-
-    // Duplicate permutation vector
-    permutation.insert(permutation.end(), permutation.begin(), permutation.end());
+    for (int i = 0; i < 8; ++i) {
+        frequency[i] = float(distribution(dre));
+        amplitude[i] = float(distribution(dre));
+    }
 }
 
-RandomTerrain::~RandomTerrain() {
-    permutation.clear();
-}
+RandomTerrain::~RandomTerrain() = default;
 
 float RandomTerrain::fade(float t) {
     return float(t*t*t*(t*(t*6.0 - 15.0) + 10.0));
 }
 
-float RandomTerrain::grad(float d) {
-    return this->permutation[int(floorf(d))] > size / 2 ? 1.0 : -1.0;
+int RandomTerrain::grad(float d) {
+    dre.seed(long(long(d * 1000) + seed));
+    return distribution(dre);
 }
 
 float RandomTerrain::noise(float d) {
@@ -40,22 +27,26 @@ float RandomTerrain::noise(float d) {
     float t = d - p0;
     float fade_t = fade(t);
 
-    float g0 = grad(p0);
-    float g1 = grad(p1);
+    auto g0 = float(grad(p0));
+    auto g1 = float(grad(p1));
 
     return float((1.0 - fade_t) * g0 * (d - p0) + fade_t * g1 * (d - p1));
 }
 
 int RandomTerrain::perlinNoise(int x) {
 
-    float n = noise(float(x) * 0.01f) * 20.f +
-              noise(float(x) * 0.001f) * 50.f +
-              noise(float(x) * 0.02f) * 10.f +
-              noise(float(x) * 1.f) * 8.f;
+    float n = noise(float(x) * (frequency[0] * 0.01f)) * (20.f * amplitude[0]) +
+              noise(float(x) * (frequency[1] * 0.001f)) * (50.f * amplitude[1]) +
+              noise(float(x) * (frequency[2] * 0.02f)) * (10.f * amplitude[2]) +
+              noise(float(x) * (frequency[3] * 1.f)) * (8.f * amplitude[3]) +
+              noise(float(x) * (frequency[4] * 0.03f)) * (9.f * amplitude[4]) +
+              noise(float(x) * (frequency[5] * 0.00002f)) * (100.f * amplitude[5]) +
+              noise(float(x) * (frequency[6] * 0.00345f)) * (30.f * amplitude[6]) +
+              noise(float(x) * (frequency[7] * 0.00432f)) * (12.f * amplitude[7]);
 
     return int(n);
 }
 
-int RandomTerrain::getSeed() {
+int RandomTerrain::getSeed() const {
     return seed;
 }

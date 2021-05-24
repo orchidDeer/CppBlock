@@ -3,9 +3,9 @@
 #include "View.h"
 
 int main() {
-    int seed = 452;
+    int seed = 56432;
 
-    World world(50, seed);
+    World world(150, seed);
     View view(20, 119, world);
 
     clock_t time = clock();
