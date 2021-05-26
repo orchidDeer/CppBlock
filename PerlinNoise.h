@@ -16,25 +16,16 @@
 /**
  * Perlin noise for generation Terrain.
  */
-class RandomTerrain {
+class PerlinNoise {
 public:
-    RandomTerrain(int seed);
-    ~RandomTerrain();
+    PerlinNoise();
+    ~PerlinNoise();
 
-    int perlinNoise(int x);
     static float fade(float t);
-    int grad(float p);
-    float noise(float p);
-
-    int getSeed() const;
+    int grad(float d, int seed);
+    float noise(int d, float frequency, float amplitude, int seed);
 
 private:
-
-    int seed;
-
-    float frequency[8]{};
-    float amplitude[8]{};
-
     std::uniform_int_distribution<int> distribution;
     std::default_random_engine dre;
 };

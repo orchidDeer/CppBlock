@@ -3,17 +3,12 @@
 #include "View.h"
 
 int main() {
-    int seed = 56432;
+    int seed = 3124;
 
     World world(150, seed);
     View view(20, 119, world);
 
     clock_t time = clock();
-
-    /*std::cout << int(0.1) << std::endl;
-    std::cout << int(0.5)  << std::endl;
-    std::cout << int(0.99999)  << std::endl;
-    std::cout << int(1.5)  << std::endl;*/
 
     while(true) {
         if(clock() - time > 10) {

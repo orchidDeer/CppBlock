@@ -20,7 +20,7 @@ public:
      * @param width View distance length.
      * @param world The world.
      */
-    View(int height, int width, World world);
+    View(int height, int width, World &world);
     ~View();
 
     /**
@@ -35,12 +35,12 @@ public:
     void draw();
 private:
     /// World how it should be drawn.
-    std::vector<std::vector<short int>> loadedWorld;
+    std::vector<Segment> loadedWorld;
     /// World how it currently is drawn.
-    std::vector<std::vector<short int>> onScreen;
+    std::vector<Segment> onScreen;
 
-    int posX = 0, posY = 0;
-    World world;
+    int posX = 0, posY = 0, viewWidth = 0;
+    World *world;
 };
 
 #endif //CMINECRAFT_VIEW_H

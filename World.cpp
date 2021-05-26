@@ -1,68 +1,41 @@
 #include "World.h"
 
-#define CHUNKSIZE 1000
+#define CHUNKSIZE 500
 
-World::World(int height, int seed) : perlinNoise(seed) {
+World::World(int height, int seed) : distribution(0, 100), chunkDistribution(0, 1) {
     this->worldHeight = height;
     this->worldSeed = seed;
+
+    // currentBiome needs to point to a biome
+    currentBiome = std::move(std::make_unique<Plains>(0, distribution, dre));
 }
 
 World::~World() {
     //change.clear();
 }
 
-int World::getTerrainHeight(int x) {
+Segment World::getSegment(int x, int minY, int maxY) {
 
-    int height;
+    // Check if currentBiome has the right biome seed
+    if(currentBiome->getSeed() != worldSeed + int(x / CHUNKSIZE)) {
+        dre.seed(worldSeed + int(x / CHUNKSIZE) - 1421);
 
-    // switch to next chunk and make a new perlin noise
-    if(worldSeed + int(x / CHUNKSIZE) != perlinNoise.getSeed()) {
-        perlinNoise = RandomTerrain(worldSeed + int(x / CHUNKSIZE));
-    }
-
-    // Get terrain height from perlin noise
-    height = worldHeight / 2 - perlinNoise.perlinNoise(x - (CHUNKSIZE * (x / CHUNKSIZE)));
-
-    // Interpolate between different perlin noise if needed to make smooth edges
-    if(x > (int(x / CHUNKSIZE) + 1) * CHUNKSIZE - 30) {
-        // Calculate bias for interpolation
-        float w = float((int(x / CHUNKSIZE) + 1) * CHUNKSIZE - x) / 30.f;
-        // Interpolate
-        height = interpolate(height, getTerrainHeight((x / CHUNKSIZE + 1) * CHUNKSIZE), w);
-    }
-
-    return height;
-}
-
-std::vector<short int> World::createNext(int x, int maxY, int minY) {
-    // Vector of world segment
-    std::vector<short int> line;
-    // Resize vector to fit the requested range
-    line.resize(maxY - minY);
-
-    // Get height of the world floor for the specific segment
-    int height = getTerrainHeight(x);
-
-    // Write data to world segment
-    for (int i = minY; i < maxY; ++i) {
-        if(i > height) {
-            line[i - minY] = 0;
-        } else {
-            line[i - minY] = 1;
+        // Choose a random biome type and point to it
+        switch (chunkDistribution(dre)) {
+            case 0:
+                currentBiome = std::move(std::make_unique<MountainBiome>(worldSeed + int(x / CHUNKSIZE),
+                                                                                distribution, dre));
+                break;
+            case 1:
+                currentBiome = std::move(std::make_unique<Plains>(worldSeed + int(x / CHUNKSIZE),
+                                                                         distribution, dre));
+                break;
         }
     }
 
-    return line;
-}
+    // Get segment information
+    Segment segment = currentBiome->generateSegmentView(x - int(x / CHUNKSIZE) * CHUNKSIZE, minY, maxY,
+                                                        worldHeight, CHUNKSIZE);
 
-int World::interpolate(int h0, int h1, float w) {
-
-    // Clips ends
-    if (0.04f > w)
-        return h1;
-    else if (0.95f < w)
-        return h0;
-
-    // Interpolation
-    return std::ceil(float(h0 - h1) * ((w * (w * 6.f - 15.f) + 10.f) * w * w * w) + float(h1));
+    return segment;
 }

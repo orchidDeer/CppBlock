@@ -3,7 +3,10 @@
 
 #include <vector>
 #include <iostream>
-#include "RandomTerrain.h"
+#include <memory>
+#include "Biomes/Biome.h"
+#include "Biomes/MountainBiome.h"
+#include "Biomes/Plains.h"
 
 /**
  * Infinite world.
@@ -24,39 +27,29 @@ public:
     void edit();
 
     /**
-     * The terrain height.
-     * @param x X position
-     * @return The terrain height at the x position.
-     */
-    int getTerrainHeight(int x);
-
-    /**
      * Generates next segment.
      * @param x X position of segment.
      * @param maxY Upper bound of vector.
      * @param minY Lower bound of vector.
      * @return Vector of world segment in Y range of minY and maxY.
      */
-    std::vector<short int> createNext(int x, int maxY, int minY);
+    Segment getSegment(int x, int maxY, int minY);
 
 private:
-    /// Perlin noise to generate base world
-    RandomTerrain perlinNoise;
+    /// Unique pointer that points on the current Biome
+    std::unique_ptr<Biome> currentBiome;
+    /// Distribution for Biome generation
+    std::uniform_int_distribution<int> distribution;
+    /// Distribution for picking a Biome
+    std::uniform_int_distribution<int> chunkDistribution;
+    /// Random engine
+    std::default_random_engine dre;
 
     /// Total height of world.
     int worldHeight;
 
     /// World seed
     int worldSeed;
-
-    /**
-     * Interpolates between two heights
-     * @param h0 Height one
-     * @param h1 Height two
-     * @param w Bias
-     * @return Interpolated height
-     */
-    static int interpolate(int h0, int h1, float w);
 
     // Area posX posY change
     //std::vector<std::vector<std::vector<short int>>> change;
